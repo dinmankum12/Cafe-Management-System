@@ -19,11 +19,21 @@ public class UserRestImpl implements UserRest{
 	UserService userService;
 
 	@Override
-	public ResponseEntity<String> signUp(Map<String, String> requestMap) {
-		// TODO Auto-generated method stub
+	public ResponseEntity<String> signup(Map<String, String> requestMap) {
 		try {
-			
-			return userService.signUp(requestMap);			
+			return userService.signup(requestMap);			
+		}catch (Exception ex) {
+			// TODO: handle exception
+			ex.printStackTrace();
+		}
+
+		return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@Override
+	public ResponseEntity<String> login(Map<String, String> requestMap) {
+		try {
+			return userService.login(requestMap);			
 		}catch (Exception ex) {
 			// TODO: handle exception
 			ex.printStackTrace();
