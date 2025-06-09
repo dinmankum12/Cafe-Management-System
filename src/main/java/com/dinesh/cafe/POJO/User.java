@@ -15,9 +15,10 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 import lombok.Data;
 
-@NamedQueries({
     @NamedQuery(name = "User.findByEmailId", query = "select u from User u where u.email=:email")
-})
+//	@NamedQuery (name="user.getAllUser", query = "select new com.dinesh.cafe.wrapper.UserWrapper(u.id,u.name,u.email,u.contactNumber,u.status) from User u where u.role='user'")
+//    @NamedQuery (name="user.updateStatus", query = "update User u set u.status=:status where u.id=:id")
+
 
 @Data
 @Entity
