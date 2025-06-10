@@ -13,16 +13,21 @@ import org.springframework.data.repository.query.Param;
 import com.dinesh.cafe.POJO.User;
 import com.dinesh.cafe.wrapper.UserWrapper;
 
-public interface UserDao extends JpaRepository<User, Integer>{
-	
+public interface UserDao extends JpaRepository<User, Integer> {
+
 	User findByEmailId(@Param("email") String email);
-	 @Query("SELECT new com.dinesh.cafe.wrapper.UserWrapper(u.id, u.name, u.email, u.contactNumber, u.status) FROM User u WHERE u.role = 'user'")
+
+	@Query("SELECT new com.dinesh.cafe.wrapper.UserWrapper(u.id, u.name, u.email, u.contactNumber, u.status) FROM User u WHERE u.role = 'user'")
 	List<UserWrapper> getAllUsers();
-	 
-	 @Query ("update User u set u.status=:status where u.id=:id")
-	 @Transactional
-	 @Modifying
+	
+	@Query("SELECT u.email FROM User u WHERE u.role = 'admin'")
+	List<String> getAllAdmin();
+
+	@Query("update User u set u.status=:status where u.id=:id")
+	@Transactional
+	@Modifying
 	Integer updateStatus(@Param("status") String status, @Param("id") Integer id);
+
 
 
 }

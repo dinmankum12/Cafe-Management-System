@@ -21,8 +21,11 @@ import com.dinesh.cafe.jwt.JwtFilter;
 import com.dinesh.cafe.jwt.JwtUtil;
 import com.dinesh.cafe.service.UserService;
 import com.dinesh.cafe.utils.CafeUtils;
+import com.dinesh.cafe.utils.EmailUtils;
 import com.dinesh.cafe.wrapper.UserWrapper;
 import com.google.common.base.Optional;
+
+import ch.qos.logback.core.status.Status;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +35,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 public class UserServiceImpl implements UserService {
-
+	
+	
 	@Autowired
 	UserDao userDao;
 
@@ -44,6 +48,9 @@ public class UserServiceImpl implements UserService {
 	
 	@Autowired
 	JwtFilter jwtFilter;
+	
+	@Autowired
+	EmailUtils emailUtils;
 
 	@Autowired
 	CustomerUserDetailsService customerUserDetailsService;
@@ -148,6 +155,7 @@ public class UserServiceImpl implements UserService {
 				
 				if(!optional.isEmpty()) {
 					userDao.updateStatus(requestMap.get("status"),Integer.parseInt(requestMap.get("id")));
+					sendMailToAllAdmin(requestMap.get("status"),optional.get().getEmail(),userDao.getAllAdmin());
 					return CafeUtils.getResponseEntity("User status Updated Successfully", HttpStatus.OK);
 					
 				}else {
@@ -162,6 +170,17 @@ public class UserServiceImpl implements UserService {
 			e.printStackTrace();
 		}
 		return CafeUtils.getResponseEntity(CafeConstants.SOMETHING_WENT_WRONG, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	private void sendMailToAllAdmin(String status, String email, List<String> allAdmin) {
+		allAdmin.remove(jwtFilter.getCurrentUser());
+		if(status !=null && status.equalsIgnoreCase("true")) {
+			emailUtils.sendSimpleMessage(jwtFilter.getCurrentUser(), "Account Approve", "User:- " + userDao + "\n is approved by \n Admin:-" + jwtFilter.getCurrentUser() , allAdmin);	
+		}else {
+			emailUtils.sendSimpleMessage(jwtFilter.getCurrentUser(), "Account Disabled", "User:- " + userDao + "\n is disabled by \n Admin:-" + jwtFilter.getCurrentUser() , allAdmin);	
+			
+		}
+		
 	}
 
 }
